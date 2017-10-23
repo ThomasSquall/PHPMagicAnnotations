@@ -1,10 +1,10 @@
-##Annotations for PHP
+## Annotations for PHP
 
 PHP does not have any kind of native annotation (AKA attributes from .NET world) so if you'd like to implement your own annotation framework think of using this first and save some time.
 
-###Usage
+### Usage
 
-####Create a new Annotation
+#### Create a new Annotation
 
 First you have to create a new class. In this example the class will be called **MyCustomAnnotation**
 
@@ -46,7 +46,7 @@ class MyCustomAnnotation extends TC_Annotation
 
 Now our beautiful annotation is ready to go!
 
-####Use the annotation
+#### Use the annotation
 
 Create a class to used to test the annotation
 ```
