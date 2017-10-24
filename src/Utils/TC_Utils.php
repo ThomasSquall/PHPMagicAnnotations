@@ -130,7 +130,7 @@ class TC_Utils
 
     /**
      * Splits a string with delimiter specified
-     * @param $string
+     * @param string $string
      * @param string $delimiter
      * @return array
      */
@@ -141,16 +141,16 @@ class TC_Utils
 
     /**
      * Returns true if the where string contains the find one, excluding every occurrence between start and end
-     * @param $where
-     * @param $find
-     * @param $start
-     * @param $end
+     * @param string $where
+     * @param string $find
+     * @param string $start
+     * @param string $end
      * @return bool
      */
     public static function StringContainsExcludingBetween($where, $find, $start, $end)
     {
         $between = TC_Utils::StringBetween($where, $start, $end);
-        $where = TC_Utils::ReplaceTokens($where, [$between => ""]);
+        $where = TC_Utils::ReplaceTokens($where, [$start . $between . $end => ""]);
 
         return TC_Utils::StringContains($where, $find);
     }
