@@ -18,6 +18,8 @@ class MyCustomAnnotation
 Then you'll have to extend the **TC_Annotation** class from the library
 
 ```
+use PHPAnnotations\Annotations\TC_Annotation;
+
 class MyCustomAnnotation extends TC_Annotation
 {
 
@@ -26,6 +28,8 @@ class MyCustomAnnotation extends TC_Annotation
 
 Add some logic to it
 ```
+use PHPAnnotations\Annotations\TC_Annotation;
+
 class MyCustomAnnotation extends TC_Annotation
 {
     private $name;
@@ -71,6 +75,8 @@ class MyTestClass
 Now we're ready to test it out!
 
 ```
+use use PHPAnnotations\Reflection\TC_Reflector;
+
 $myObject = new MyTestClass();
 $reflector = new TC_Reflector($myObject);
 
