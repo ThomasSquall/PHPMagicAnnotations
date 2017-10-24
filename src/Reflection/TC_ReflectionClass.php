@@ -1,5 +1,7 @@
 <?php
 
+namespace PHPAnnotations\Reflection;
+
 class TC_ReflectionClass extends TC_ReflectionBase
 {
     public $BaseClass;

@@ -1,5 +1,14 @@
 <?php
 
+namespace PHPAnnotations\Reflection;
+
+use PHPAnnotations\Utils\TC_Utils;
+use \ReflectionProperty as ReflectionProperty;
+use \ReflectionMethod as ReflectionMethod;
+use \ReflectionClass as ReflectionClass;
+use \stdClass as stdClass;
+use \Exception as Exception;
+
 /**
  * Extended class for reflection.
  * Class TC_Reflector.
@@ -18,7 +27,7 @@ class TC_Reflector
 
     /**
      * The object to reflect.
-     * @var StdClass $object
+     * @var stdClass $object
      */
     private $object;
 
@@ -235,7 +244,7 @@ class TC_Reflector
 
                 if (!TC_Utils::StringContains($aClass, 'Annotation')) $aClass .= 'Annotation';
 
-                if (!is_subclass_of($aClass, 'TC_Annotation')) continue;
+                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\TC_Annotation')) continue;
 
                 $instance = null;
 
@@ -292,7 +301,7 @@ class TC_Reflector
                     $aClass .= 'Annotation';
                 }
 
-                if (!is_subclass_of($aClass, 'TC_Annotation')) continue;
+                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\TC_Annotation')) continue;
 
                 $obj->annotations[$aClass] = new $aClass();
             }

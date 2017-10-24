@@ -1,5 +1,10 @@
 <?php
 
+namespace PHPAnnotations\Reflection;
+
+use PHPAnnotations\Annotations\TC_Annotation;
+use PHPAnnotations\Utils\TC_Utils;
+
 abstract class TC_ReflectionBase
 {
     /**

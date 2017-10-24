@@ -1,5 +1,7 @@
 <?php
 
+namespace PHPAnnotations\Utils;
+
 /**
  * Class TC_Utils
  */
