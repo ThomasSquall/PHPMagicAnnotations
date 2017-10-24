@@ -15,7 +15,7 @@ class MyCustomAnnotation
 }
 ```
 
-Then you'll have to extend the TC_Annotation class from the library
+Then you'll have to extend the **TC_Annotation** class from the library
 
 ```
 class MyCustomAnnotation extends TC_Annotation
