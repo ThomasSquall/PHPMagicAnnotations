@@ -1,6 +1,7 @@
 {
-  "name": "ThomasSquall/PHPMagicAnnotations",
+  "name": "homas-squall/php-magic-annotations",
   "description": "Annotations system for PHP",
+  "version": "0.4.0",
   "minimum-stability": "alpha",
   "license": "MIT",
   "authors": [
