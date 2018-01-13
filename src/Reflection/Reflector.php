@@ -315,7 +315,6 @@ class Reflector
     private function FillInstance($instance)
     {
         $instance->obj = $this->object;
-        echo is_array($this->annotations) ? "Si" : "No";
         $instance->reflections = $this->annotations;
 
         return $instance;
