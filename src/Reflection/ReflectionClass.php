@@ -2,7 +2,7 @@
 
 namespace PHPAnnotations\Reflection;
 
-class TC_ReflectionClass extends TC_ReflectionBase
+class ReflectionClass extends ReflectionBase
 {
     public $BaseClass;
 
@@ -20,7 +20,7 @@ class TC_ReflectionClass extends TC_ReflectionBase
         {
             if ($parent === false) continue;
 
-            $reflector = new TC_Reflector($parent);
+            $reflector = new Reflector($parent);
             $annotation = $reflector->getClass()->getAnnotation($name);
             if ($annotation != null) break;
         }

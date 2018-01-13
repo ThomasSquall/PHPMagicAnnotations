@@ -2,14 +2,14 @@
 
 namespace PHPAnnotations\Reflection;
 
-use PHPAnnotations\Annotations\TC_Annotation;
-use PHPAnnotations\Utils\TC_Utils;
+use PHPAnnotations\Annotations\Annotation;
+use PHPAnnotations\Utils\Utils;
 
-abstract class TC_ReflectionBase
+abstract class ReflectionBase
 {
     /**
      * The array containing our annotations.
-     * @var TC_Annotation[] $annotations
+     * @var Annotation[] $annotations
      */
     public $annotations = [];
 
@@ -20,7 +20,7 @@ abstract class TC_ReflectionBase
      */
     public function hasAnnotation($name)
     {
-        if (!TC_Utils::StringContains($name, 'Annotation')) $name .= 'Annotation';
+        if (!Utils::StringContains($name, 'Annotation')) $name .= 'Annotation';
 
         foreach ($this->annotations as $annotation)
         {
@@ -33,13 +33,13 @@ abstract class TC_ReflectionBase
     /**
      * Returns the requested annotation.
      * @param string $name
-     * @return TC_Annotation|null
+     * @return Annotation|null
      */
     public function getAnnotation($name)
     {
         if ($this->hasAnnotation($name))
         {
-            if (!TC_Utils::StringContains($name, 'Annotation')) $name .= 'Annotation';
+            if (!Utils::StringContains($name, 'Annotation')) $name .= 'Annotation';
 
             return $this->annotations[$name];
         }

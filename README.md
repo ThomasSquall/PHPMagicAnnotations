@@ -15,12 +15,12 @@ class MyCustomAnnotation
 }
 ```
 
-Then you'll have to extend the **TC_Annotation** class from the library
+Then you'll have to extend the **Annotation** class from the library
 
 ```
-use PHPAnnotations\Annotations\TC_Annotation;
+use PHPAnnotations\Annotations\Annotation;
 
-class MyCustomAnnotation extends TC_Annotation
+class MyCustomAnnotation extends Annotation
 {
 
 }
@@ -28,9 +28,9 @@ class MyCustomAnnotation extends TC_Annotation
 
 Add some logic to it
 ```
-use PHPAnnotations\Annotations\TC_Annotation;
+use PHPAnnotations\Annotations\Annotation;
 
-class MyCustomAnnotation extends TC_Annotation
+class MyCustomAnnotation extends Annotation
 {
     private $name;
     private $surname;
@@ -75,10 +75,10 @@ class MyTestClass
 Now we're ready to test it out!
 
 ```
-use use PHPAnnotations\Reflection\TC_Reflector;
+use use PHPAnnotations\Reflection\Reflector;
 
 $myObject = new MyTestClass();
-$reflector = new TC_Reflector($myObject);
+$reflector = new Reflector($myObject);
 
 echo $reflector->getClass()->getAnnotation("MyCustom")->GetFullName();
 

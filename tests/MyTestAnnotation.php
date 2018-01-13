@@ -1,8 +1,8 @@
 <?php
 
-use PHPAnnotations\Annotations\TC_Annotation;
+use PHPAnnotations\Annotations\Annotation;
 
-class MyTestAnnotation extends TC_Annotation
+class MyTestAnnotation extends Annotation
 {
     private $name;
     private $surname;

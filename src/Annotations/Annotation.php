@@ -2,7 +2,7 @@
 
 namespace PHPAnnotations\Annotations;
 
-class TC_Annotation
+class Annotation
 {
 
 }

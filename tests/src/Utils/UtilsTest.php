@@ -1,37 +1,37 @@
 <?php
 
-use \PHPAnnotations\Utils\TC_Utils;
+use \PHPAnnotations\Utils\Utils;
 
-class TC_UtilsTest extends PHPUnit_Framework_TestCase
+class UtilsTest extends PHPUnit_Framework_TestCase
 {
     public function testStringStartsWithTrue()
     {
-        $this->assertTrue(TC_Utils::StringStartsWith('ThisIsASample', 'This'));
+        $this->assertTrue(Utils::StringStartsWith('ThisIsASample', 'This'));
     }
 
     public function testStringStartsWithFalse()
     {
-        $this->assertFalse(TC_Utils::StringStartsWith('ThisIsASample', 'this'));
+        $this->assertFalse(Utils::StringStartsWith('ThisIsASample', 'this'));
     }
 
     public function testStringEqualsTrue()
     {
-        $this->assertTrue(TC_Utils::StringEquals('Equal', 'Equal'));
+        $this->assertTrue(Utils::StringEquals('Equal', 'Equal'));
     }
 
     public function testStringEqualsFalse()
     {
-        $this->assertFalse(TC_Utils::StringEquals('Equal', 'notEqual'));
+        $this->assertFalse(Utils::StringEquals('Equal', 'notEqual'));
     }
 
     public function testStringEndsWithTrue()
     {
-        $this->assertTrue(TC_Utils::StringEndsWith('ThisIsASample', 'Sample'));
+        $this->assertTrue(Utils::StringEndsWith('ThisIsASample', 'Sample'));
     }
 
     public function testStringEndsWithFalse()
     {
-        $this->assertFalse(TC_Utils::StringEndsWith('ThisIsASample', 'sample'));
+        $this->assertFalse(Utils::StringEndsWith('ThisIsASample', 'sample'));
     }
 
     public function testStringBefore()
@@ -39,22 +39,22 @@ class TC_UtilsTest extends PHPUnit_Framework_TestCase
         $expected = "test";
 
         $this->assertEquals($expected,
-            TC_Utils::StringBefore('testThisPlease', 'T'));
+            Utils::StringBefore('testThisPlease', 'T'));
     }
 
     public function testStringBeforeFalse()
     {
-        $this->assertFalse(TC_Utils::StringBefore('testThisPlease', 'Leviathan'));
+        $this->assertFalse(Utils::StringBefore('testThisPlease', 'Leviathan'));
     }
 
     public function testStringContainsTrue()
     {
-        $this->assertTrue(TC_Utils::StringContains('testThisPlease', 'This'));
+        $this->assertTrue(Utils::StringContains('testThisPlease', 'This'));
     }
 
     public function testStringContainsFalse()
     {
-        $this->assertFalse(TC_Utils::StringContains('testThisPlease', 'Leviathan'));
+        $this->assertFalse(Utils::StringContains('testThisPlease', 'Leviathan'));
     }
 
     public function testReplaceTokens()
@@ -62,7 +62,7 @@ class TC_UtilsTest extends PHPUnit_Framework_TestCase
         $expected = "Hello World!";
 
         $this->assertEquals($expected,
-            TC_Utils::ReplaceTokens('testThisPlease',
+            Utils::ReplaceTokens('testThisPlease',
                 [
                     "test" => "Hello",
                     "This" => " ",
@@ -79,16 +79,16 @@ class TC_UtilsTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->assertEquals($expected,
-            TC_Utils::Split("Hello World!", " "));
+            Utils::Split("Hello World!", " "));
     }
 
     public function testStringContainsExcludingBetweenTrue()
     {
-        $this->assertTrue(TC_Utils::StringContainsExcludingBetween("Test1Test2Test", "Test", "1", "2"));
+        $this->assertTrue(Utils::StringContainsExcludingBetween("Test1Test2Test", "Test", "1", "2"));
     }
 
     public function testStringContainsExcludingBetweenFalse()
     {
-        $this->assertFalse(TC_Utils::StringContainsExcludingBetween("No1Test2No", "Test", "1", "2"));
+        $this->assertFalse(Utils::StringContainsExcludingBetween("No1Test2No", "Test", "1", "2"));
     }
 }

@@ -3,9 +3,9 @@
 namespace PHPAnnotations\Utils;
 
 /**
- * Class TC_Utils
+ * Class Utils
  */
-class TC_Utils
+class Utils
 {
     /**
      * Returns if the given string starts with the start string.
@@ -52,7 +52,7 @@ class TC_Utils
      */
     public static function StringBefore($string, $before)
     {
-        if (TC_Utils::StringContains($string, $before))
+        if (Utils::StringContains($string, $before))
         {
             $tmp = explode($before, $string);
             return $tmp[0];
@@ -87,15 +87,15 @@ class TC_Utils
      */
     public static function StringsBetween($string, $start, $end)
     {
-        $s = TC_Utils::StringBetween($string, $start, $end);
+        $s = Utils::StringBetween($string, $start, $end);
 
         $result = [];
 
         while (is_string($s))
         {
             $result[] = $s;
-            $string = TC_Utils::ReplaceTokens($string, ["$start$s$end" => "----$$$$$$$----"]);
-            $s = TC_Utils::StringBetween($string, $start, $end);
+            $string = Utils::ReplaceTokens($string, ["$start$s$end" => "----$$$$$$$----"]);
+            $s = Utils::StringBetween($string, $start, $end);
         }
 
         return $result;
@@ -149,9 +149,9 @@ class TC_Utils
      */
     public static function StringContainsExcludingBetween($where, $find, $start, $end)
     {
-        $between = TC_Utils::StringBetween($where, $start, $end);
-        $where = TC_Utils::ReplaceTokens($where, [$start . $between . $end => ""]);
+        $between = Utils::StringBetween($where, $start, $end);
+        $where = Utils::ReplaceTokens($where, [$start . $between . $end => ""]);
 
-        return TC_Utils::StringContains($where, $find);
+        return Utils::StringContains($where, $find);
     }
 }

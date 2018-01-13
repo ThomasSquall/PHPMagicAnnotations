@@ -2,28 +2,28 @@
 
 namespace PHPAnnotations\Reflection;
 
-use PHPAnnotations\Utils\TC_Utils;
-use \ReflectionProperty as ReflectionProperty;
-use \ReflectionMethod as ReflectionMethod;
-use \ReflectionClass as ReflectionClass;
+use PHPAnnotations\Utils\Utils;
+use \ReflectionProperty as RP;
+use \ReflectionMethod as RM;
+use \ReflectionClass as RC;
 use \stdClass as stdClass;
 use \Exception as Exception;
 
 /**
  * Extended class for reflection.
- * Class TC_Reflector.
+ * Class Reflector.
  */
-class TC_Reflector
+class Reflector
 {
     /**
      * Used to get all the properties.
      */
-    const ALL_PROPERTIES = ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED | ReflectionProperty::IS_PRIVATE;
+    const ALL_PROPERTIES = RP::IS_PUBLIC | RP::IS_PROTECTED | RP::IS_PRIVATE;
 
     /**
      * Used to get all the methods.
      */
-    const ALL_METHODS = ReflectionMethod::IS_PUBLIC | ReflectionMethod::IS_PROTECTED | ReflectionMethod::IS_PRIVATE;
+    const ALL_METHODS = RM::IS_PUBLIC | RM::IS_PROTECTED | RM::IS_PRIVATE;
 
     /**
      * The object to reflect.
@@ -33,18 +33,18 @@ class TC_Reflector
 
     /**
      * The reflected object.
-     * @var ReflectionClass $reflected
+     * @var RC $reflected
      */
     private $reflected;
 
     /**
      * Array of object annotations.
-     * @var TC_ReflectionBase[] $annotations
+     * @var ReflectionBase[] $annotations
      */
     private $annotations;
 
     /**
-     * TC_Reflector constructor.
+     * Reflector constructor.
      * @param mixed $object
      * @throws Exception
      */
@@ -59,13 +59,13 @@ class TC_Reflector
             $this->object = null;
         }
 
-        $this->reflected = new ReflectionClass($object);
+        $this->reflected = new RC($object);
         $this->prepareAnnotations();
     }
 
     /**
      * Returns the reflected base object
-     * @return ReflectionClass
+     * @return RC
      */
     public function getReflectedObject()
     {
@@ -74,7 +74,7 @@ class TC_Reflector
 
     /**
      * Returns the reflected class.
-     * @return TC_ReflectionClass
+     * @return ReflectionClass
      */
     public function getClass()
     {
@@ -92,7 +92,7 @@ class TC_Reflector
 
     /**
      * Returns the reflected properties.
-     * @return array[TC_ReflectionProperty[]]
+     * @return array[ReflectionProperty[]]
      */
     public function getProperties()
     {
@@ -102,7 +102,7 @@ class TC_Reflector
     /**
      * Returns the reflected parameter.
      * @param string $name
-     * @return TC_ReflectionProperty
+     * @return ReflectionProperty
      */
     public function getProperty($name)
     {
@@ -116,7 +116,7 @@ class TC_Reflector
 
     /**
      * Returns the reflected methods.
-     * @return array[TC_ReflectionMethod[]]
+     * @return array[ReflectionMethod[]]
      */
     public function getMethods()
     {
@@ -126,7 +126,7 @@ class TC_Reflector
     /**
      * Returns the reflected method.
      * @param string $name
-     * @return TC_ReflectionMethod
+     * @return ReflectionMethod
      */
     public function getMethod($name)
     {
@@ -147,7 +147,7 @@ class TC_Reflector
             'methods' => []
         ];
 
-        $class = new TC_ReflectionClass($this->reflected->name);
+        $class = new ReflectionClass($this->reflected->name);
         $this->calculateAnnotations($class, $this->reflected->getDocComment());
         $docs['class'] = $class;
 
@@ -155,7 +155,7 @@ class TC_Reflector
 
         foreach ($properties as $p)
         {
-            $property = new TC_ReflectionProperty();
+            $property = new ReflectionProperty();
             $this->calculateAnnotations($property, $p->getDocComment());
             $docs['properties'][$p->getName()] = $property;
         }
@@ -164,7 +164,7 @@ class TC_Reflector
 
         foreach ($methods as $m)
         {
-            $method = new TC_ReflectionMethod();
+            $method = new ReflectionMethod();
             $this->calculateAnnotations($method, $m->getDocComment());
             $docs['methods'][$m->getName()] = $method;
         }
@@ -172,29 +172,29 @@ class TC_Reflector
         $this->annotations = $docs;
     }
 
-    private function calculateAnnotations(TC_ReflectionBase &$obj, $docs)
+    private function calculateAnnotations(ReflectionBase &$obj, $docs)
     {
         $tmp = trim(preg_replace('/\s\s+/', ' ', $docs));
-        $tmp = TC_Utils::StringsBetween($tmp, '[', ']');
+        $tmp = Utils::StringsBetween($tmp, '[', ']');
 
         foreach ($tmp as $annotation)
         {
-            if (TC_Utils::StringContains($annotation, '('))
+            if (Utils::StringContains($annotation, '('))
             {
-                $args = TC_Utils::StringBetween($annotation, '(', ')');
+                $args = Utils::StringBetween($annotation, '(', ')');
 
-                if (TC_Utils::StringContainsExcludingBetween($args, ',', "\"", "\""))
+                if (Utils::StringContainsExcludingBetween($args, ',', "\"", "\""))
                 {
-                    $args = TC_Utils::ReplaceTokens($args, [', '=>',']);
-                    $args = TC_Utils::Split($args, ',');
+                    $args = Utils::ReplaceTokens($args, [', '=>',']);
+                    $args = Utils::Split($args, ',');
 
                     $namedArgs = [];
                     foreach ($args as $arg)
                     {
-                        if (!TC_Utils::StringContains($arg, '=')) continue;
+                        if (!Utils::StringContains($arg, '=')) continue;
 
-                        $tokens = TC_Utils::ReplaceTokens($arg, [' = ' => '=', ' =' => '=', '= ' => '=']);
-                        $tokens = TC_Utils::Split($tokens, '=');
+                        $tokens = Utils::ReplaceTokens($arg, [' = ' => '=', ' =' => '=', '= ' => '=']);
+                        $tokens = Utils::Split($tokens, '=');
 
                         $namedArgs[$tokens[0]] = $tokens[1];
                     }
@@ -203,10 +203,10 @@ class TC_Reflector
                 }
                 else
                 {
-                    if (TC_Utils::StringContains($args, '='))
+                    if (Utils::StringContains($args, '='))
                     {
-                        $args = TC_Utils::ReplaceTokens($args, [' =' => '=', '= ', '=', ' = ', '=']);
-                        $args = TC_Utils::Split($args, '=');
+                        $args = Utils::ReplaceTokens($args, [' =' => '=', '= ', '=', ' = ', '=']);
+                        $args = Utils::Split($args, '=');
 
                         $args = [$args[0] => $args[1]];
                     }
@@ -217,40 +217,40 @@ class TC_Reflector
                 {
                     $v = trim($v);
 
-                    if (TC_Utils::StringStartsWith($v, "'") && TC_Utils::StringEndsWith($v, "'"))
+                    if (Utils::StringStartsWith($v, "'") && Utils::StringEndsWith($v, "'"))
                     {
-                        $args[$k] = TC_Utils::StringBetween($v, "'", "'");
+                        $args[$k] = Utils::StringBetween($v, "'", "'");
                     }
-                    elseif (TC_Utils::StringStartsWith($v, '"') && TC_Utils::StringEndsWith($v, '"'))
+                    elseif (Utils::StringStartsWith($v, '"') && Utils::StringEndsWith($v, '"'))
                     {
-                        $args[$k] = TC_Utils::StringBetween($v, '"', '"');
+                        $args[$k] = Utils::StringBetween($v, '"', '"');
                     }
-                    elseif (TC_Utils::StringEquals(strtolower($v), 'true'))
+                    elseif (Utils::StringEquals(strtolower($v), 'true'))
                     {
                         $args[$k] = true;
                     }
-                    elseif (TC_Utils::StringEquals(strtolower($v), 'false'))
+                    elseif (Utils::StringEquals(strtolower($v), 'false'))
                     {
                         $args[$k] = false;
                     }
                     else
                     {
-                        if (TC_Utils::StringContains($v, '.')) $args[$k] = floatval($v);
+                        if (Utils::StringContains($v, '.')) $args[$k] = floatval($v);
                         else $args[$k] = intval($v);
                     }
                 }
 
-                $aClass = TC_Utils::StringBefore($annotation, '(');
+                $aClass = Utils::StringBefore($annotation, '(');
 
-                if (!TC_Utils::StringContains($aClass, 'Annotation')) $aClass .= 'Annotation';
+                if (!Utils::StringContains($aClass, 'Annotation')) $aClass .= 'Annotation';
 
-                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\TC_Annotation')) continue;
+                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) continue;
 
                 $instance = null;
 
                 if (method_exists($aClass, '__construct'))
                 {
-                    $refMethod = new ReflectionMethod($aClass,  '__construct');
+                    $refMethod = new RM($aClass,  '__construct');
                     $params = $refMethod->getParameters();
 
                     $reArgs = [];
@@ -273,7 +273,7 @@ class TC_Reflector
                         unset($args[$key]);
                     }
 
-                    $refClass = new ReflectionClass($aClass);
+                    $refClass = new RC($aClass);
                     $instance = $refClass->newInstanceArgs((array) $reArgs);
                 }
                 else $instance = new $aClass();
@@ -296,12 +296,12 @@ class TC_Reflector
             {
                 $aClass = $annotation;
 
-                if (!TC_Utils::StringContains($aClass, 'Annotation'))
+                if (!Utils::StringContains($aClass, 'Annotation'))
                 {
                     $aClass .= 'Annotation';
                 }
 
-                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\TC_Annotation')) continue;
+                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) continue;
 
                 $obj->annotations[$aClass] = new $aClass();
             }
