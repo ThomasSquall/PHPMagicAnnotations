@@ -31,6 +31,9 @@ class ReflectorTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected,
             $reflector->getClass()->getAnnotation("MyTest")->GetFullName());
+
+        $this->assertInstanceOf('MyTestClass',
+            $reflector->getClass()->getAnnotation("MyTest")->GetObject());
     }
 
     public function testGetAnnotationNull()

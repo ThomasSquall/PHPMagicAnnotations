@@ -62,6 +62,23 @@ class Utils
     }
 
     /**
+     * Gets the string after another.
+     * @param string $string
+     * @param string $after
+     * @return string|bool
+     */
+    public static function StringAfter($string, $after)
+    {
+        if (Utils::StringContains($string, $after))
+        {
+            $tmp = explode($after, $string);
+            return $tmp[1];
+        }
+
+        return false;
+    }
+
+    /**
      * Gets the string in between two others strings.
      * @param $string
      * @param $start

@@ -189,6 +189,7 @@ class Reflector
                     $args = Utils::Split($args, ',');
 
                     $namedArgs = [];
+
                     foreach ($args as $arg)
                     {
                         if (!Utils::StringContains($arg, '=')) continue;
@@ -274,7 +275,8 @@ class Reflector
                     }
 
                     $refClass = new RC($aClass);
-                    $instance = $refClass->newInstanceArgs((array) $reArgs);
+                    $instance = $refClass->newInstanceArgs((array)$reArgs);
+
                 }
                 else $instance = new $aClass();
 
@@ -289,6 +291,7 @@ class Reflector
                         }
                     }
 
+                    $instance = $this->FillInstance($instance);
                     $obj->annotations[$aClass] = $instance;
                 }
             }
@@ -303,8 +306,18 @@ class Reflector
 
                 if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) continue;
 
-                $obj->annotations[$aClass] = new $aClass();
+                $instance = $this->FillInstance(new $aClass());
+                $obj->annotations[$aClass] = $instance;
             }
         }
+    }
+
+    private function FillInstance($instance)
+    {
+        $instance->obj = $this->object;
+        echo is_array($this->annotations) ? "Si" : "No";
+        $instance->reflections = $this->annotations;
+
+        return $instance;
     }
 }

@@ -17,4 +17,9 @@ class MyTestAnnotation extends Annotation
     {
         return "$this->name $this->surname";
     }
+
+    public function GetObject()
+    {
+        return $this->obj;
+    }
 }
