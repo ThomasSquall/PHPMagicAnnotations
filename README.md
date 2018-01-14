@@ -10,13 +10,20 @@
 
 PHP does not have any kind of native annotation (AKA attributes from .NET world) so if you'd like to implement your own annotation framework think of using this first and save some time.
 
+### Installation
+
+Using composer is quite simple, just run the following command:
+```
+$ composer install thomas-squall/php-magic-annotations
+```
+
 ### Usage
 
 #### Create a new Annotation
 
 First you have to create a new class. In this example the class will be called **MyCustomAnnotation**
 
-```
+``` php
 class MyCustomAnnotation
 {
 
@@ -25,7 +32,7 @@ class MyCustomAnnotation
 
 Then you'll have to extend the **Annotation** class from the library
 
-```
+``` php
 use PHPAnnotations\Annotations\Annotation;
 
 class MyCustomAnnotation extends Annotation
@@ -35,7 +42,7 @@ class MyCustomAnnotation extends Annotation
 ```
 
 Add some logic to it
-```
+``` php
 use PHPAnnotations\Annotations\Annotation;
 
 class MyCustomAnnotation extends Annotation
@@ -61,7 +68,7 @@ Now our beautiful annotation is ready to go!
 #### Use the annotation
 
 Create a class to used to test the annotation
-```
+``` php
 class MyTestClass
 {
 
@@ -70,7 +77,7 @@ class MyTestClass
 
 And add the annotation through the docs
 
-```
+``` php
 /**
  * [MyCustom(name = "Thomas", surname = "Cocchiara")]
  **/
@@ -82,7 +89,7 @@ class MyTestClass
 
 Now we're ready to test it out!
 
-```
+``` php
 use use PHPAnnotations\Reflection\Reflector;
 
 $myObject = new MyTestClass();
