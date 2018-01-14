@@ -28,7 +28,7 @@ class Reflector
      * The object to reflect.
      * @var stdClass $object
      */
-    private $object;
+    private $object = null;
 
     /**
      * The reflected object.
@@ -49,26 +49,16 @@ class Reflector
      */
     public function __construct($object)
     {
-        if (is_object($object))
-        {
-            $this->object = $object;
-        }
-        else
-        {
-            $this->object = null;
-        }
+        if (is_null($object))
+            throw new Exception("Cannot evaluate null!");
+
+        if (!is_object($object))
+            throw new Exception("Works with objects only!");
+
+        $this->object = $object;
 
         $this->reflected = new RC($object);
         $this->prepareAnnotations();
-    }
-
-    /**
-     * Returns the reflected base object
-     * @return RC
-     */
-    public function getReflectedObject()
-    {
-        return $this->reflected;
     }
 
     /**
@@ -159,7 +149,7 @@ class Reflector
             $docs['properties'][$p->getName()] = $property;
         }
 
-        $methods = $this->reflected->getMethods(self::ALL_PROPERTIES);
+        $methods = $this->reflected->getMethods(self::ALL_METHODS);
 
         foreach ($methods as $m)
         {
@@ -342,6 +332,7 @@ class Reflector
         }
 
         $refClass = new RC($aClass);
+
         return $refClass->newInstanceArgs((array)$reArgs);
     }
 
@@ -352,35 +343,43 @@ class Reflector
 
     private function stringEndsWith($string, $end)
     {
+        $result = true;
         $length = strlen($end);
 
-        if ($length == 0) return true;
+        if ($length != 0) $result = substr($string, -$length) === $end;
 
-        return substr($string, -$length) === $end;
+        return $result;
     }
 
     private function stringBefore($string, $before)
     {
+        $result = false;
+
         if ($this->stringContains($string, $before))
         {
             $tmp = explode($before, $string);
-            return $tmp[0];
+            $result = $tmp[0];
         }
 
-        return false;
+        return $result;
     }
     
     private function stringBetween($string, $start, $end)
     {
+        $result = false;
+
         $string = ' ' . $string;
         $ini = strpos($string, $start);
-        
-        if ($ini == 0) return false;
-        
-        $ini += strlen($start);
-        $len = strpos($string, $end, $ini) - $ini;
-        
-        return substr($string, $ini, $len);
+
+        if ($ini != 0)
+        {
+            $ini += strlen($start);
+            $len = strpos($string, $end, $ini) - $ini;
+
+            $result = substr($string, $ini, $len);
+        }
+
+        return $result;
     }
 
     private function stringsBetween($string, $start, $end)
