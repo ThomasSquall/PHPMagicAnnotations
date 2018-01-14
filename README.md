@@ -1,5 +1,13 @@
 ## Annotations for PHP
 
+[![Latest Stable Version](https://poser.pugx.org/thomas-squall/php-magic-annotations/v/stable.svg)](https://packagist.org/packages/thomas-squall/php-magic-annotations) 
+[![Build Status](https://travis-ci.org/ThomasSquall/PHPMagicAnnotations.svg?branch=master)](https://travis-ci.org/ThomasSquall/PHPMagicAnnotations)
+[![Coverage Status](https://coveralls.io/repos/github/ThomasSquall/PHPMagicAnnotations/badge.svg?branch=master)](https://coveralls.io/github/ThomasSquall/PHPMagicAnnotations?branch=master)
+[![codecov](https://codecov.io/gh/ThomasSquall/PHPMagicAnnotations/branch/master/graph/badge.svg)](https://codecov.io/gh/ThomasSquall/PHPMagicAnnotations)
+[![Total Downloads](https://poser.pugx.org/thomas-squall/php-magic-annotations/downloads.svg)](https://packagist.org/thomas-squall/php-magic-annotationsr) 
+[![License](https://poser.pugx.org/thomas-squall/php-magic-annotations/license.svg)](https://packagist.org/packages/thomas-squall/php-magic-annotations)
+
+
 PHP does not have any kind of native annotation (AKA attributes from .NET world) so if you'd like to implement your own annotation framework think of using this first and save some time.
 
 ### Usage
