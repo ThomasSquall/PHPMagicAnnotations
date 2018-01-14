@@ -5,7 +5,7 @@ include_once dirname(__FILE__) . '/../../MyTestClass.php';
 
 use \PHPAnnotations\Reflection\Reflector;
 
-class ReflectorTest extends \PHPUnit\Framework\TestCase
+class ReflectorTest extends PHPUnit_Framework_TestCase
 {
     public function testHasAnnotationTrue()
     {
