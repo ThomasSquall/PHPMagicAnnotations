@@ -95,4 +95,20 @@ class ReflectorTest extends PHPUnit_Framework_TestCase
 
         $this->assertNull($reflector->getMethod('fwe'));
     }
+
+    public function testAnnotationWithNoConstructor()
+    {
+        $myClass = new MyTestClass();
+        $reflector = new Reflector($myClass);
+
+        $this->assertTrue($reflector->getMethod('callTest2')->hasAnnotation('NoConstructor'));
+    }
+
+    public function testAnnotationWithOneArg()
+    {
+        $myClass = new MyTestClass();
+        $reflector = new Reflector($myClass);
+
+        $this->assertTrue($reflector->getMethod('callTest2')->hasAnnotation('OneArg'));
+    }
 }
