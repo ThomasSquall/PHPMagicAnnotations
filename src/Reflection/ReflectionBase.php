@@ -19,14 +19,20 @@ abstract class ReflectionBase
      */
     public function hasAnnotation($name)
     {
-        if (!$this->StringContains($name, 'Annotation')) $name .= 'Annotation';
+        $result = false;
+
+        if (!$this->stringContains($name, 'Annotation')) $name .= 'Annotation';
 
         foreach ($this->annotations as $annotation)
         {
-            if (is_a($annotation, $name)) return true;
+            if (is_a($annotation, $name))
+            {
+                $result = true;
+                break;
+            }
         }
 
-        return false;
+        return $result;
     }
 
     /**
@@ -36,18 +42,95 @@ abstract class ReflectionBase
      */
     public function getAnnotation($name)
     {
+        $result = null;
+
         if ($this->hasAnnotation($name))
         {
-            if (!$this->StringContains($name, 'Annotation')) $name .= 'Annotation';
+            if (!$this->stringContains($name, 'Annotation')) $name .= 'Annotation';
 
-            return $this->annotations[$name];
+            $result = $this->annotations[$name];
+            $result = $this->evaluateAnnotation($result);
         }
 
-        return null;
+        return $result;
     }
 
-    private function StringContains($where, $find)
+    private function evaluateAnnotation(Annotation $annotation)
+    {
+        $reflected = new \ReflectionClass($annotation);
+        $properties = $reflected->getProperties(
+            \ReflectionProperty::IS_PUBLIC |
+            \ReflectionProperty::IS_PROTECTED
+        );
+
+        foreach ($properties as $p)
+        {
+            $key = $p->name;
+            $value = $annotation->$key;
+
+            if (is_string($value) &&
+                $this->stringContains($value, '{$'))
+            {
+                $fields = $this->stringsBetween($value, '{$', '}');
+
+                $tokens = [];
+
+                foreach ($fields as $field)
+                {
+                    $v = property_exists($annotation->obj, $field) ? $annotation->obj->$field : "";
+                    $tokens['{$' . $field . '}'] = $v;
+                }
+
+                $value = $this->replaceTokens($value, $tokens);
+
+                $annotation->$key = $value;
+            }
+        }
+
+        return $annotation;
+    }
+
+    private function stringContains($where, $find)
     {
         return strpos($where, $find) !== false;
+    }
+
+    private function stringBetween($string, $start, $end)
+    {
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+
+        if ($ini == 0) return false;
+
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+
+        return substr($string, $ini, $len);
+    }
+
+    private function stringsBetween($string, $start, $end)
+    {
+        $s = $this->stringBetween($string, $start, $end);
+
+        $result = [];
+
+        while (is_string($s))
+        {
+            $result[] = $s;
+            $string = $this->replaceTokens($string, ["$start$s$end" => "----$$$$$$$----"]);
+            $s = $this->stringBetween($string, $start, $end);
+        }
+
+        return $result;
+    }
+
+    private function replaceTokens($text, array $replace)
+    {
+        foreach ($replace as $token => $value)
+        {
+            $text = str_replace($token, $value, $text);
+        }
+
+        return $text;
     }
 }

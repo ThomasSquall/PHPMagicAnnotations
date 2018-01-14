@@ -4,8 +4,8 @@ use PHPAnnotations\Annotations\Annotation;
 
 class MyTestAnnotation extends Annotation
 {
-    private $name;
-    private $surname;
+    protected $name;
+    protected $surname;
 
     public function __construct($name, $surname)
     {

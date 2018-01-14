@@ -383,7 +383,7 @@ class Reflector
         return substr($string, $ini, $len);
     }
 
-    public function stringsBetween($string, $start, $end)
+    private function stringsBetween($string, $start, $end)
     {
         $s = $this->stringBetween($string, $start, $end);
 
