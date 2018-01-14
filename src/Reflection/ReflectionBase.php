@@ -3,7 +3,6 @@
 namespace PHPAnnotations\Reflection;
 
 use PHPAnnotations\Annotations\Annotation;
-use PHPAnnotations\Utils\Utils;
 
 abstract class ReflectionBase
 {
@@ -20,7 +19,7 @@ abstract class ReflectionBase
      */
     public function hasAnnotation($name)
     {
-        if (!Utils::StringContains($name, 'Annotation')) $name .= 'Annotation';
+        if (!$this->StringContains($name, 'Annotation')) $name .= 'Annotation';
 
         foreach ($this->annotations as $annotation)
         {
@@ -39,11 +38,16 @@ abstract class ReflectionBase
     {
         if ($this->hasAnnotation($name))
         {
-            if (!Utils::StringContains($name, 'Annotation')) $name .= 'Annotation';
+            if (!$this->StringContains($name, 'Annotation')) $name .= 'Annotation';
 
             return $this->annotations[$name];
         }
 
         return null;
+    }
+
+    private function StringContains($where, $find)
+    {
+        return strpos($where, $find) !== false;
     }
 }

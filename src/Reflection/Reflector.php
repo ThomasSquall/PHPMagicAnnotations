@@ -2,7 +2,6 @@
 
 namespace PHPAnnotations\Reflection;
 
-use PHPAnnotations\Utils\Utils;
 use \ReflectionProperty as RP;
 use \ReflectionMethod as RM;
 use \ReflectionClass as RC;
@@ -175,148 +174,251 @@ class Reflector
     private function calculateAnnotations(ReflectionBase &$obj, $docs)
     {
         $tmp = trim(preg_replace('/\s\s+/', ' ', $docs));
-        $tmp = Utils::StringsBetween($tmp, '[', ']');
+        $tmp = $this->stringsBetween($tmp, '[', ']');
 
         foreach ($tmp as $annotation)
         {
-            if (Utils::StringContains($annotation, '('))
+            if ($this->stringContains($annotation, '('))
             {
-                $args = Utils::StringBetween($annotation, '(', ')');
-
-                if (Utils::StringContainsExcludingBetween($args, ',', "\"", "\""))
-                {
-                    $args = Utils::ReplaceTokens($args, [', '=>',']);
-                    $args = Utils::Split($args, ',');
-
-                    $namedArgs = [];
-
-                    foreach ($args as $arg)
-                    {
-                        if (!Utils::StringContains($arg, '=')) continue;
-
-                        $tokens = Utils::ReplaceTokens($arg, [' = ' => '=', ' =' => '=', '= ' => '=']);
-                        $tokens = Utils::Split($tokens, '=');
-
-                        $namedArgs[$tokens[0]] = $tokens[1];
-                    }
-
-                    $args = $namedArgs;
-                }
-                else
-                {
-                    if (Utils::StringContains($args, '='))
-                    {
-                        $args = Utils::ReplaceTokens($args, [' =' => '=', '= ', '=', ' = ', '=']);
-                        $args = Utils::Split($args, '=');
-
-                        $args = [$args[0] => $args[1]];
-                    }
-                    elseif ($args !== "") $args = [$args];
-                }
-
-                foreach ($args as $k => $v)
-                {
-                    $v = trim($v);
-
-                    if (Utils::StringStartsWith($v, "'") && Utils::StringEndsWith($v, "'"))
-                    {
-                        $args[$k] = Utils::StringBetween($v, "'", "'");
-                    }
-                    elseif (Utils::StringStartsWith($v, '"') && Utils::StringEndsWith($v, '"'))
-                    {
-                        $args[$k] = Utils::StringBetween($v, '"', '"');
-                    }
-                    elseif (Utils::StringEquals(strtolower($v), 'true'))
-                    {
-                        $args[$k] = true;
-                    }
-                    elseif (Utils::StringEquals(strtolower($v), 'false'))
-                    {
-                        $args[$k] = false;
-                    }
-                    else
-                    {
-                        if (Utils::StringContains($v, '.')) $args[$k] = floatval($v);
-                        else $args[$k] = intval($v);
-                    }
-                }
-
-                $aClass = Utils::StringBefore($annotation, '(');
-
-                if (!Utils::StringContains($aClass, 'Annotation')) $aClass .= 'Annotation';
-
-                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) continue;
-
-                $instance = null;
-
-                if (method_exists($aClass, '__construct'))
-                {
-                    $refMethod = new RM($aClass,  '__construct');
-                    $params = $refMethod->getParameters();
-
-                    $reArgs = [];
-
-                    foreach ($params as $key => $param)
-                    {
-                        $name = $param->getName();
-
-                        if (isset($args[$name])) $key = $name;
-
-                        if (!isset($args[$key]))
-                        {
-                            $reArgs[$key] = null;
-                            continue;
-                        }
-
-                        if ($param->isPassedByReference()) $reArgs[$key] = &$args[$key];
-                        else $reArgs[$key] = $args[$key];
-
-                        unset($args[$key]);
-                    }
-
-                    $refClass = new RC($aClass);
-                    $instance = $refClass->newInstanceArgs((array)$reArgs);
-
-                }
-                else $instance = new $aClass();
-
-                if ($instance != null)
-                {
-                    if (count($args) > 0)
-                    {
-                        foreach ($args as $key => $value)
-                        {
-                            if (!property_exists($instance, $key)) continue;
-                            $instance->$key = $value;
-                        }
-                    }
-
-                    $instance = $this->FillInstance($instance);
-                    $obj->annotations[$aClass] = $instance;
-                }
+                $this->calculateAnnotationsWithArgs($obj, $annotation);
             }
             else
             {
-                $aClass = $annotation;
-
-                if (!Utils::StringContains($aClass, 'Annotation'))
-                {
-                    $aClass .= 'Annotation';
-                }
-
-                if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) continue;
-
-                $instance = $this->FillInstance(new $aClass());
-                $obj->annotations[$aClass] = $instance;
+                $this->calculateAnnotationsWithoutArgs($obj, $annotation);
             }
         }
+    }
+
+    private function calculateAnnotationsWithArgs(&$obj, $annotation)
+    {
+        $args = $this->stringBetween($annotation, '(', ')');
+
+        if ($this->stringContainsExcludingBetween($args, ',', "\"", "\""))
+        {
+            $args = $this->calculateMultipleArgs($args);
+        }
+        else $args = $this->calculateSingleArg($args);
+
+        foreach ($args as $k => $v) $args[$k] = $this->parseArg($v);
+
+        $aClass = $this->stringBefore($annotation, '(');
+
+        if (!$this->stringContains($aClass, 'Annotation')) $aClass .= 'Annotation';
+
+        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) return;
+
+        $instance = null;
+
+        if (method_exists($aClass, '__construct'))
+        {
+            $instance = $this->instanceFromConstructor($aClass, $args);
+        }
+        else $instance = new $aClass();
+
+        if ($instance != null)
+        {
+            if (count($args) > 0)
+            {
+                foreach ($args as $key => $value)
+                {
+                    if (!property_exists($instance, $key)) continue;
+                    $instance->$key = $value;
+                }
+            }
+
+            $instance = $this->FillInstance($instance);
+            $obj->annotations[$aClass] = $instance;
+        }
+    }
+
+    private function calculateAnnotationsWithoutArgs(&$obj, $annotation)
+    {
+        $aClass = $annotation;
+
+        if (!$this->stringContains($aClass, 'Annotation'))
+        {
+            $aClass .= 'Annotation';
+        }
+
+        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) return;
+
+        $instance = $this->FillInstance(new $aClass());
+        $obj->annotations[$aClass] = $instance;
+    }
+
+    private function calculateMultipleArgs($args)
+    {
+        $args = $this->replaceTokens($args, [', ' => ',']);
+        $args = explode(',', $args);
+
+        $namedArgs = [];
+
+        foreach ($args as $arg)
+        {
+            if (!$this->stringContains($arg, '=')) continue;
+
+            $tokens = $this->replaceTokens($arg, [' = ' => '=', ' =' => '=', '= ' => '=']);
+            $tokens = explode('=', $tokens);
+
+            $namedArgs[$tokens[0]] = $tokens[1];
+        }
+
+        return $namedArgs;
+    }
+
+    private function calculateSingleArg($args)
+    {
+        if ($this->stringContains($args, '='))
+        {
+            $args = $this->replaceTokens($args, [' =' => '=', '= ', '=', ' = ', '=']);
+            $args = explode('=', $args);
+
+            $args = [$args[0] => $args[1]];
+        }
+        elseif ($args !== "") $args = [$args];
+
+        return $args;
     }
 
     private function FillInstance($instance)
     {
         $instance->obj = $this->object;
-        $instance->reflections = $this->annotations;
 
         return $instance;
+    }
+
+    private function parseArg($value)
+    {
+        $v = trim($value);
+
+        if ($this->stringStartsWith($v, "'") && $this->stringEndsWith($v, "'"))
+        {
+            $result = $this->stringBetween($v, "'", "'");
+        }
+        elseif ($this->stringStartsWith($v, '"') && $this->stringEndsWith($v, '"'))
+        {
+            $result = $this->stringBetween($v, '"', '"');
+        }
+        elseif (strtolower($v) === 'true')
+        {
+            $result= true;
+        }
+        elseif (strtolower($v) === 'false')
+        {
+            $result = false;
+        }
+        else
+        {
+            if ($this->stringContains($v, '.')) $result = floatval($v);
+            else $result = intval($v);
+        }
+
+        return $result;
+    }
+
+    private function instanceFromConstructor($aClass, &$args)
+    {
+        $refMethod = new RM($aClass,  '__construct');
+        $params = $refMethod->getParameters();
+
+        $reArgs = [];
+
+        foreach ($params as $key => $param)
+        {
+            $name = $param->getName();
+
+            if (isset($args[$name])) $key = $name;
+
+            if (!isset($args[$key]))
+            {
+                $reArgs[$key] = null;
+                continue;
+            }
+
+            if ($param->isPassedByReference()) $reArgs[$key] = &$args[$key];
+            else $reArgs[$key] = $args[$key];
+
+            unset($args[$key]);
+        }
+
+        $refClass = new RC($aClass);
+        return $refClass->newInstanceArgs((array)$reArgs);
+    }
+
+    private function stringStartsWith($string, $start)
+    {
+        return substr($string, 0, strlen($start)) === $start;
+    }
+
+    private function stringEndsWith($string, $end)
+    {
+        $length = strlen($end);
+
+        if ($length == 0) return true;
+
+        return substr($string, -$length) === $end;
+    }
+
+    private function stringBefore($string, $before)
+    {
+        if ($this->stringContains($string, $before))
+        {
+            $tmp = explode($before, $string);
+            return $tmp[0];
+        }
+
+        return false;
+    }
+    
+    private function stringBetween($string, $start, $end)
+    {
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        
+        if ($ini == 0) return false;
+        
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        
+        return substr($string, $ini, $len);
+    }
+
+    public function stringsBetween($string, $start, $end)
+    {
+        $s = $this->stringBetween($string, $start, $end);
+
+        $result = [];
+
+        while (is_string($s))
+        {
+            $result[] = $s;
+            $string = $this->replaceTokens($string, ["$start$s$end" => "----$$$$$$$----"]);
+            $s = $this->stringBetween($string, $start, $end);
+        }
+
+        return $result;
+    }
+
+    private function stringContains($where, $find)
+    {
+        return strpos($where, $find) !== false;
+    }
+
+    private function stringContainsExcludingBetween($where, $find, $start, $end)
+    {
+        $between = $this->stringBetween($where, $start, $end);
+        $where = $this->replaceTokens($where, [$start . $between . $end => ""]);
+
+        return $this->stringContains($where, $find);
+    }
+
+    private function replaceTokens($text, array $replace)
+    {
+        foreach ($replace as $token => $value)
+        {
+            $text = str_replace($token, $value, $text);
+        }
+
+        return $text;
     }
 }

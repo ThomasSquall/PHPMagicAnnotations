@@ -2,8 +2,6 @@
 
 namespace PHPAnnotations\Annotations;
 
-use PHPAnnotations\Utils\Utils;
-
 class Annotation
 {
     protected $obj;
@@ -13,8 +11,8 @@ class Annotation
         $trace = debug_backtrace();
         $class = $trace[1]['class'];
 
-        if (Utils::StringEquals('\PHPAnnotations\Reflection\Reflector', $class)
-         || Utils::StringEquals('PHPAnnotations\Reflection\Reflector', $class))
+        if ('\PHPAnnotations\Reflection\Reflector' === $class
+            || 'PHPAnnotations\Reflection\Reflector' === $class)
         {
             $this->$key = $value;
         }
