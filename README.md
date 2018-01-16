@@ -14,7 +14,7 @@ PHP does not have any kind of native annotation (AKA attributes from .NET world)
 
 Using composer is quite simple, just run the following command:
 ```
-$ composer install thomas-squall/php-magic-annotations
+$ composer require thomas-squall/php-magic-annotations
 ```
 
 ### Usage
