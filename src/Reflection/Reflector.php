@@ -96,9 +96,7 @@ class Reflector
     public function getProperty($name)
     {
         if ($this->reflected->hasProperty($name))
-        {
             return $this->annotations['properties'][$name];
-        }
 
         return null;
     }
@@ -120,9 +118,7 @@ class Reflector
     public function getMethod($name)
     {
         if ($this->reflected->hasMethod($name))
-        {
             return $this->annotations['methods'][$name];
-        }
 
         return null;
     }
@@ -164,46 +160,43 @@ class Reflector
     private function calculateAnnotations(ReflectionBase &$obj, $docs)
     {
         $tmp = trim(preg_replace('/\s\s+/', ' ', $docs));
-        $tmp = $this->stringsBetween($tmp, '[', ']');
+        $tmp = strings_between($tmp, '[', ']');
 
         foreach ($tmp as $annotation)
         {
-            if ($this->stringContains($annotation, '('))
-            {
+            if (string_contains($annotation, '('))
                 $this->calculateAnnotationsWithArgs($obj, $annotation);
-            }
             else
-            {
                 $this->calculateAnnotationsWithoutArgs($obj, $annotation);
-            }
         }
     }
 
     private function calculateAnnotationsWithArgs(&$obj, $annotation)
     {
-        $args = $this->stringBetween($annotation, '(', ')');
+        $args = string_between($annotation, '(', ')');
 
         if ($this->stringContainsExcludingBetween($args, ',', "\"", "\""))
-        {
             $args = $this->calculateMultipleArgs($args);
-        }
-        else $args = $this->calculateSingleArg($args);
+        else
+            $args = $this->calculateSingleArg($args);
 
-        foreach ($args as $k => $v) $args[$k] = $this->parseArg($v);
+        foreach ($args as $k => $v)
+            $args[$k] = $this->parseArg($v);
 
         $aClass = $this->stringBefore($annotation, '(');
 
-        if (!$this->stringContains($aClass, 'Annotation')) $aClass .= 'Annotation';
+        if (!string_contains($aClass, 'Annotation'))
+            $aClass .= 'Annotation';
 
-        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) return;
+        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
+            return;
 
         $instance = null;
 
         if (method_exists($aClass, '__construct'))
-        {
             $instance = $this->instanceFromConstructor($aClass, $args);
-        }
-        else $instance = new $aClass();
+        else
+            $instance = new $aClass();
 
         if ($instance != null)
         {
@@ -216,7 +209,7 @@ class Reflector
                 }
             }
 
-            $instance = $this->FillInstance($instance);
+            $instance = $this->fillInstance($instance);
             $obj->annotations[$aClass] = $instance;
         }
     }
@@ -225,14 +218,12 @@ class Reflector
     {
         $aClass = $annotation;
 
-        if (!$this->stringContains($aClass, 'Annotation'))
-        {
+        if (!string_contains($aClass, 'Annotation'))
             $aClass .= 'Annotation';
-        }
 
         if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) return;
 
-        $instance = $this->FillInstance(new $aClass());
+        $instance = $this->fillInstance(new $aClass());
         $obj->annotations[$aClass] = $instance;
     }
 
@@ -245,7 +236,7 @@ class Reflector
 
         foreach ($args as $arg)
         {
-            if (!$this->stringContains($arg, '=')) continue;
+            if (!string_contains($arg, '=')) continue;
 
             $tokens = $this->replaceTokens($arg, [' = ' => '=', ' =' => '=', '= ' => '=']);
             $tokens = explode('=', $tokens);
@@ -258,7 +249,7 @@ class Reflector
 
     private function calculateSingleArg($args)
     {
-        if ($this->stringContains($args, '='))
+        if (string_contains($args, '='))
         {
             $args = $this->replaceTokens($args, [' =' => '=', '= ', '=', ' = ', '=']);
             $args = explode('=', $args);
@@ -270,7 +261,7 @@ class Reflector
         return $args;
     }
 
-    private function FillInstance($instance)
+    private function fillInstance($instance)
     {
         $instance->obj = $this->object;
 
@@ -281,25 +272,17 @@ class Reflector
     {
         $v = trim($value);
 
-        if ($this->stringStartsWith($v, "'") && $this->stringEndsWith($v, "'"))
-        {
-            $result = $this->stringBetween($v, "'", "'");
-        }
-        elseif ($this->stringStartsWith($v, '"') && $this->stringEndsWith($v, '"'))
-        {
-            $result = $this->stringBetween($v, '"', '"');
-        }
+        if (string_starts_with($v, "'") && string_ends_with($v, "'"))
+            $result = strings_between($v, "'", "'");
+        elseif (string_starts_with($v, '"') && string_ends_with($v, '"'))
+            $result = strings_between($v, '"', '"');
         elseif (strtolower($v) === 'true')
-        {
             $result= true;
-        }
         elseif (strtolower($v) === 'false')
-        {
             $result = false;
-        }
         else
         {
-            if ($this->stringContains($v, '.')) $result = floatval($v);
+            if (string_contains($v, '.')) $result = floatval($v);
             else $result = intval($v);
         }
 
@@ -336,26 +319,11 @@ class Reflector
         return $refClass->newInstanceArgs((array)$reArgs);
     }
 
-    private function stringStartsWith($string, $start)
-    {
-        return substr($string, 0, strlen($start)) === $start;
-    }
-
-    private function stringEndsWith($string, $end)
-    {
-        $result = true;
-        $length = strlen($end);
-
-        if ($length != 0) $result = substr($string, -$length) === $end;
-
-        return $result;
-    }
-
     private function stringBefore($string, $before)
     {
         $result = false;
 
-        if ($this->stringContains($string, $before))
+        if (string_contains($string, $before))
         {
             $tmp = explode($before, $string);
             $result = $tmp[0];
@@ -363,52 +331,13 @@ class Reflector
 
         return $result;
     }
-    
-    private function stringBetween($string, $start, $end)
-    {
-        $result = false;
-
-        $string = ' ' . $string;
-        $ini = strpos($string, $start);
-
-        if ($ini != 0)
-        {
-            $ini += strlen($start);
-            $len = strpos($string, $end, $ini) - $ini;
-
-            $result = substr($string, $ini, $len);
-        }
-
-        return $result;
-    }
-
-    private function stringsBetween($string, $start, $end)
-    {
-        $s = $this->stringBetween($string, $start, $end);
-
-        $result = [];
-
-        while (is_string($s))
-        {
-            $result[] = $s;
-            $string = $this->replaceTokens($string, ["$start$s$end" => "----$$$$$$$----"]);
-            $s = $this->stringBetween($string, $start, $end);
-        }
-
-        return $result;
-    }
-
-    private function stringContains($where, $find)
-    {
-        return strpos($where, $find) !== false;
-    }
 
     private function stringContainsExcludingBetween($where, $find, $start, $end)
     {
-        $between = $this->stringBetween($where, $start, $end);
+        $between = string_between($where, $start, $end);
         $where = $this->replaceTokens($where, [$start . $between . $end => ""]);
 
-        return $this->stringContains($where, $find);
+        return string_contains($where, $find);
     }
 
     private function replaceTokens($text, array $replace)

@@ -21,7 +21,7 @@ abstract class ReflectionBase
     {
         $result = false;
 
-        if (!$this->stringContains($name, 'Annotation')) $name .= 'Annotation';
+        if (!string_contains($name, 'Annotation')) $name .= 'Annotation';
 
         foreach ($this->annotations as $annotation)
         {
@@ -46,7 +46,7 @@ abstract class ReflectionBase
 
         if ($this->hasAnnotation($name))
         {
-            if (!$this->stringContains($name, 'Annotation')) $name .= 'Annotation';
+            if (!string_contains($name, 'Annotation')) $name .= 'Annotation';
 
             $result = $this->annotations[$name];
             $result = $this->evaluateAnnotation($result);
@@ -68,10 +68,9 @@ abstract class ReflectionBase
             $key = $p->name;
             $value = $annotation->$key;
 
-            if (is_string($value) &&
-                $this->stringContains($value, '{$'))
+            if (is_string($value) && string_contains($value, '{$'))
             {
-                $fields = $this->stringsBetween($value, '{$', '}');
+                $fields = strings_between($value, '{$', '}');
 
                 $tokens = [];
 
@@ -88,40 +87,6 @@ abstract class ReflectionBase
         }
 
         return $annotation;
-    }
-
-    private function stringContains($where, $find)
-    {
-        return strpos($where, $find) !== false;
-    }
-
-    private function stringBetween($string, $start, $end)
-    {
-        $string = ' ' . $string;
-        $ini = strpos($string, $start);
-
-        if ($ini == 0) return false;
-
-        $ini += strlen($start);
-        $len = strpos($string, $end, $ini) - $ini;
-
-        return substr($string, $ini, $len);
-    }
-
-    private function stringsBetween($string, $start, $end)
-    {
-        $s = $this->stringBetween($string, $start, $end);
-
-        $result = [];
-
-        while (is_string($s))
-        {
-            $result[] = $s;
-            $string = $this->replaceTokens($string, ["$start$s$end" => "----$$$$$$$----"]);
-            $s = $this->stringBetween($string, $start, $end);
-        }
-
-        return $result;
     }
 
     private function replaceTokens($text, array $replace)
