@@ -185,7 +185,7 @@ class Reflector
 
         $aClass = $this->stringBefore($annotation, '(');
 
-        if (!string_contains($aClass, 'Annotation'))
+        if (!string_ends_with($aClass, 'Annotation'))
             $aClass .= 'Annotation';
 
         if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
@@ -218,7 +218,7 @@ class Reflector
     {
         $aClass = $annotation;
 
-        if (!string_contains($aClass, 'Annotation'))
+        if (!string_ends_with($aClass, 'Annotation'))
             $aClass .= 'Annotation';
 
         if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) return;
