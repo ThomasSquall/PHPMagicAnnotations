@@ -273,9 +273,9 @@ class Reflector
         $v = trim($value);
 
         if (string_starts_with($v, "'") && string_ends_with($v, "'"))
-            $result = strings_between($v, "'", "'");
+            $result = string_between($v, "'", "'");
         elseif (string_starts_with($v, '"') && string_ends_with($v, '"'))
-            $result = strings_between($v, '"', '"');
+            $result = string_between($v, '"', '"');
         elseif (strtolower($v) === 'true')
             $result= true;
         elseif (strtolower($v) === 'false')
