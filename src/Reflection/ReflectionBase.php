@@ -48,7 +48,18 @@ abstract class ReflectionBase
         {
             if (!string_contains($name, 'Annotation')) $name .= 'Annotation';
 
-            $result = $this->annotations[$name];
+            $result = isset($this->annotations[$name]) ? $this->annotations[$name] : null;
+
+            if ($result == null)
+            {
+                if (string_starts_with($name, '\\'))
+                    $name = substr($name, 1, strlen($name) - 1);
+                else
+                    $name = '\\' . $name;
+
+                $result = isset($this->annotations[$name]) ? $this->annotations[$name] : null;
+            }
+
             $result = $this->evaluateAnnotation($result);
         }
 
