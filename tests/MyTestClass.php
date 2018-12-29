@@ -1,7 +1,7 @@
 <?php
 
 /**
- * [MyTest(name = "Thomas", surname = "{$surname}")]
+ * @MyTest(name = "Thomas", surname = "{$surname}")
  */
 class MyTestClass
 {
@@ -13,8 +13,8 @@ class MyTestClass
     public function callTest() {}
 
     /**
-     * [OneArg("Nice")]
-     * [NoConstructor]
+     * @OneArg(arg = ["ciao", "due"])
+     * @NoConstructor
      */
     public function callTest2() {}
 }

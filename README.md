@@ -79,7 +79,7 @@ And add the annotation through the docs
 
 ``` php
 /**
- * [MyCustom(name = "Thomas", surname = "Cocchiara")]
+ * @MyCustom(name = "Thomas", surname = "Cocchiara")
  **/
 class MyTestClass
 {

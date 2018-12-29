@@ -159,8 +159,7 @@ class Reflector
 
     private function calculateAnnotations(ReflectionBase &$obj, $docs)
     {
-        $tmp = trim(preg_replace('/\s\s+/', ' ', $docs));
-        $tmp = strings_between($tmp, '[', ']');
+        $tmp = strings_between($docs, '@', "\n");
 
         foreach ($tmp as $annotation)
         {
@@ -175,7 +174,8 @@ class Reflector
     {
         $args = string_between($annotation, '(', ')');
 
-        if ($this->stringContainsExcludingBetween($args, ',', "\"", "\""))
+        if ($this->stringContainsExcludingBetween($args, ',', "\"", "\"") &&
+            $this->stringContainsExcludingBetween($args, ',', "[", "]"))
             $args = $this->calculateMultipleArgs($args);
         else
             $args = $this->calculateSingleArg($args);
@@ -276,6 +276,8 @@ class Reflector
             $result = string_between($v, "'", "'");
         elseif (string_starts_with($v, '"') && string_ends_with($v, '"'))
             $result = string_between($v, '"', '"');
+        elseif (string_starts_with($v, '[') && string_ends_with($v, ']'))
+            $result = explode(',', string_between($v, '[', ']'));
         elseif (strtolower($v) === 'true')
             $result= true;
         elseif (strtolower($v) === 'false')
