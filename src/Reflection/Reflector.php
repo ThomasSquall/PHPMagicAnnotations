@@ -405,6 +405,6 @@ class Reflector
         }
 
         if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
-            return;
+            $aClass = null;
     }
 }
