@@ -7,6 +7,9 @@ class MyTestClass
 {
     const TEST_CONSTANT = "TEST";
 
+    /**
+     * @var int $age
+     */
     var $age = 27;
     var $surname = "Cocchiara";
 

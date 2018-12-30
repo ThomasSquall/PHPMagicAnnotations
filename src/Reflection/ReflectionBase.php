@@ -25,6 +25,11 @@ abstract class ReflectionBase
 
         foreach ($this->annotations as $annotation)
         {
+            if (string_starts_with($annotation, "\\") && !string_starts_with($name, "\\"))
+                $name = "\\" . $name;
+            elseif (!string_starts_with($annotation, "\\") && string_starts_with($name, "\\"))
+                $name = substr($name, 1);
+
             if (string_ends_with(get_class($annotation), $name))
             {
                 $result = true;
@@ -43,6 +48,11 @@ abstract class ReflectionBase
 
         foreach ($this->annotations as $annotation)
         {
+            if (string_starts_with($annotation, "\\") && !string_starts_with($name, "\\"))
+                $name = "\\" . $name;
+            elseif (!string_starts_with($annotation, "\\") && string_starts_with($name, "\\"))
+                $name = substr($name, 1);
+
             if (string_ends_with(get_class($annotation), $name))
             {
                 $name = get_class($annotation);

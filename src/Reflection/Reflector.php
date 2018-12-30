@@ -185,24 +185,12 @@ class Reflector
 
         $aClass = $this->stringBefore($annotation, '(');
 
-//        if (!string_ends_with($aClass, 'Annotation'))
-//            $aClass .= 'Annotation';
-//
-//        foreach (get_declared_classes() as $class)
-//        {
-//            if (string_ends_with($class, $aClass))
-//            {
-//                $aClass = $class;
-//                break;
-//            }
-//        }
-//
-//        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
-//            return;
-
         $this->getAnnotationsClass($aClass);
 
         $instance = null;
+
+        if (is_null($aClass))
+            return;
 
         if (method_exists($aClass, '__construct'))
             $instance = $this->instanceFromConstructor($aClass, $args);
@@ -230,6 +218,9 @@ class Reflector
         $aClass = $annotation;
 
         $this->getAnnotationsClass($aClass);
+
+        if (is_null($aClass))
+            return;
 
         $instance = $this->fillInstance(new $aClass());
         $obj->annotations[$aClass] = $instance;
