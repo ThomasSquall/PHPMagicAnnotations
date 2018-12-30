@@ -32,7 +32,7 @@ abstract class ReflectionBase
             elseif (!string_starts_with($class, "\\") && string_starts_with($name, "\\"))
                 $name = substr($name, 1);
 
-            if (string_ends_with(get_class($class), $name))
+            if (string_ends_with($class, $name))
             {
                 $result = true;
                 break;

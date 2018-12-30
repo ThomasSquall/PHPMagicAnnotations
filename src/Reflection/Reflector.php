@@ -401,7 +401,10 @@ class Reflector
                 }
             }
 
-            $aClass = $possibleAnnotations[0];
+            if ($count != 0)
+                $aClass = $possibleAnnotations[0];
+            else
+                $aClass = null;
         }
 
         if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
