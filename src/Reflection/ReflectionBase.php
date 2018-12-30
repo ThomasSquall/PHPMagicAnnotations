@@ -21,12 +21,31 @@ abstract class ReflectionBase
     {
         $result = false;
 
-        if (!string_contains($name, 'Annotation')) $name .= 'Annotation';
+        if (!string_ends_with($name, 'Annotation')) $name .= 'Annotation';
 
         foreach ($this->annotations as $annotation)
         {
-            if (is_a($annotation, $name))
+            if (string_ends_with(get_class($annotation), $name))
             {
+                $result = true;
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    private function hasAnnotationAndReturn(&$name)
+    {
+        $result = false;
+
+        if (!string_ends_with($name, 'Annotation')) $name .= 'Annotation';
+
+        foreach ($this->annotations as $annotation)
+        {
+            if (string_ends_with(get_class($annotation), $name))
+            {
+                $name = get_class($annotation);
                 $result = true;
                 break;
             }
@@ -44,9 +63,9 @@ abstract class ReflectionBase
     {
         $result = null;
 
-        if ($this->hasAnnotation($name))
+        if ($this->hasAnnotationAndReturn($name))
         {
-            if (!string_contains($name, 'Annotation')) $name .= 'Annotation';
+            if (!string_ends_with($name, 'Annotation')) $name .= 'Annotation';
 
             $result = isset($this->annotations[$name]) ? $this->annotations[$name] : null;
 

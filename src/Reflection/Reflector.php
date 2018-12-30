@@ -185,11 +185,22 @@ class Reflector
 
         $aClass = $this->stringBefore($annotation, '(');
 
-        if (!string_ends_with($aClass, 'Annotation'))
-            $aClass .= 'Annotation';
+//        if (!string_ends_with($aClass, 'Annotation'))
+//            $aClass .= 'Annotation';
+//
+//        foreach (get_declared_classes() as $class)
+//        {
+//            if (string_ends_with($class, $aClass))
+//            {
+//                $aClass = $class;
+//                break;
+//            }
+//        }
+//
+//        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
+//            return;
 
-        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
-            return;
+        $this->getAnnotationsClass($aClass);
 
         $instance = null;
 
@@ -218,10 +229,7 @@ class Reflector
     {
         $aClass = $annotation;
 
-        if (!string_ends_with($aClass, 'Annotation'))
-            $aClass .= 'Annotation';
-
-        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation')) return;
+        $this->getAnnotationsClass($aClass);
 
         $instance = $this->fillInstance(new $aClass());
         $obj->annotations[$aClass] = $instance;
@@ -350,5 +358,62 @@ class Reflector
         }
 
         return $text;
+    }
+
+    private function getAnnotationsClass(&$aClass)
+    {
+        if (!string_ends_with($aClass, 'Annotation'))
+            $aClass .= 'Annotation';
+
+        $possibleAnnotations = [];
+
+        if (!string_contains($aClass, "\\"))
+        {
+            foreach (get_declared_classes() as $class)
+                if (string_ends_with($class, $aClass))
+                    $possibleAnnotations[] = $class;
+
+            $count = count($possibleAnnotations);
+
+            if ($count > 1)
+            {
+                $message = "";
+                $foundSame = false;
+
+                foreach ($possibleAnnotations as $index => $annotation)
+                {
+                    if ($annotation === $aClass)
+                    {
+                        $possibleAnnotations[0] = $annotation;
+                        $foundSame = true;
+                        break;
+                    }
+
+                    switch ($index)
+                    {
+                        case $count - 2;
+                            $message .= "$annotation and ";
+                            break;
+                        case $count - 1;
+                            $message .= "$annotation ";
+                            break;
+                        default:
+                            $message .= "$annotation , ";
+                            break;
+                    }
+                }
+
+                if (!$foundSame)
+                {
+                    $message .= "all satisfy the $aClass. Please use a full namespace instead.";
+                    throw new Exception($message);
+                }
+            }
+
+            $aClass = $possibleAnnotations[0];
+        }
+
+        if (!is_subclass_of($aClass, 'PHPAnnotations\Annotations\Annotation'))
+            return;
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+namespace tests;
+
 use PHPAnnotations\Annotations\Annotation;
 
 class MyTestAnnotation extends Annotation
