@@ -58,7 +58,7 @@ function class_get_annotation($object, $annotation)
     if (class_has_annotation($object, $annotation))
         return get_reflected_class($object)->getClass()->getAnnotation($annotation);
 
-    return "";
+    return null;
 }
 
 function method_get_annotation($object, $method, $annotation)
@@ -66,7 +66,7 @@ function method_get_annotation($object, $method, $annotation)
     if (method_has_annotation($object, $method, $annotation))
         return get_reflected_class($object)->getMethod($method)->getAnnotation($annotation);
 
-    return "";
+    return null;
 }
 
 function property_get_annotation($object, $property, $annotation)
@@ -74,7 +74,7 @@ function property_get_annotation($object, $property, $annotation)
     if (property_has_annotation($object, $property, $annotation))
         return get_reflected_class($object)->getProperty($property)->getAnnotation($annotation);
 
-    return "";
+    return null;
 }
 
 function get_reflected_class($object)
