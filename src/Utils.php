@@ -23,7 +23,6 @@ function method_has_annotation($object, $method, $annotation)
         throw new Exception("Third argument of method_has_annotation should be a string, " .
             gettype($annotation) . " given instead.");
 
-
     $reflectedMethod = $class->getMethod($method);
 
     if (is_null($reflectedMethod))
@@ -52,6 +51,30 @@ function property_has_annotation($object, $property, $annotation)
 
     /** @var \PHPAnnotations\Reflection\ReflectionMethod $reflectedProperty */
     return $reflectedProperty->hasAnnotation($annotation);
+}
+
+function class_get_annotation($object, $annotation)
+{
+    if (class_has_annotation($object, $annotation))
+        return get_reflected_class($object)->getClass()->getAnnotation($annotation);
+
+    return "";
+}
+
+function method_get_annotation($object, $method, $annotation)
+{
+    if (method_has_annotation($object, $method, $annotation))
+        return get_reflected_class($object)->getMethod($method)->getAnnotation($annotation);
+
+    return "";
+}
+
+function property_get_annotation($object, $property, $annotation)
+{
+    if (property_has_annotation($object, $property, $annotation))
+        return get_reflected_class($object)->getProperty($property)->getAnnotation($annotation);
+
+    return "";
 }
 
 function get_reflected_class($object)
