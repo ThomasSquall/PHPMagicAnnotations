@@ -159,6 +159,7 @@ class Reflector
 
     private function calculateAnnotations(ReflectionBase &$obj, $docs)
     {
+        $docs = str_replace("\r", "", $docs);
         $tmp = strings_between($docs, '@', "\n");
 
         foreach ($tmp as $annotation)
