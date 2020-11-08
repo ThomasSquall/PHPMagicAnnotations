@@ -306,7 +306,11 @@ class Reflector
 
             if (!isset($args[$key]))
             {
-                $reArgs[$key] = null;
+                $reArgs[$key] =
+                    $param->isDefaultValueAvailable() ?
+                    $param->getDefaultValue() :
+                    null;
+
                 continue;
             }
 
